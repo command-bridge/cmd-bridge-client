@@ -1,0 +1,51 @@
+{
+  "name": "command-bridge-client",
+  "version": "1.0.0",
+  "main": "src/main.ts",
+  "scripts": {
+    "tsc:build": "tsc",
+    "lint": "eslint --ext .ts,.vue src",
+    "vue:serve": "vue-cli-service serve",
+    "tsc:watch": "tsc --watch",
+    "electron:start": "cross-env NODE_ENV=development BUILD_TARGET=electron electron dist/main.js",
+    "vue:build": "vue-cli-service build",
+    "serve": "concurrently \"npm run vue:serve\" \"npm run tsc:watch\"",
+    "build:webpack": "webpack --config webpack.config.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@mdi/font": "^7.4.47",
+    "electron-store": "^8.2.0",
+    "i18next": "^23.16.4",
+    "install": "^0.13.0",
+    "npm": "^10.9.0",
+    "vue": "^3.5.12",
+    "vue-router": "^4.4.5",
+    "vuetify": "^3.7.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.7",
+    "@types/vue-router": "^2.0.0",
+    "@types/webpack-env": "^1.18.5",
+    "@typescript-eslint/eslint-plugin": "^8.12.2",
+    "@typescript-eslint/parser": "^8.12.2",
+    "@vue/cli-service": "^5.0.8",
+    "@vue/compiler-sfc": "^3.5.12",
+    "concurrently": "^9.0.1",
+    "cross-env": "^7.0.3",
+    "electron": "^33.0.2",
+    "electron-builder": "^25.1.8",
+    "electron-reload": "^2.0.0-alpha.1",
+    "eslint": "^9.14.0",
+    "eslint-plugin-vue": "^9.30.0",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3",
+    "vue-cli-service": "^5.0.10",
+    "vue-loader": "^17.4.2",
+    "webpack-cli": "^5.1.4"
+  }
+}

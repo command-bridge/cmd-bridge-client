@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+      "target": "es2020",
+      "module": "commonjs", 
+      "strict": true,
+      "esModuleInterop": true,
+      "resolveJsonModule": true,
+      "forceConsistentCasingInFileNames": true,
+      "moduleResolution": "node",
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,      
+      "outDir": "./dist",
+      "allowSyntheticDefaultImports": true,
+      "jsx": "react",                 // Adiciona suporte para JSX (necessário para algumas bibliotecas Vue)
+      "types": ["webpack-env", "vuetify"],          // Adiciona tipos de ambiente Webpack      
+    },
+    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]
+  }
