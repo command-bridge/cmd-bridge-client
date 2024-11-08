@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import ActivationView from './views/activation/activation.view.vue';
+import SettingsView from './views/settings/settings.view.vue';
+import HealthView from './views/health/health.view.vue';
 import { state } from './store';
 
 const routes: RouteRecordRaw[] = [
@@ -17,17 +19,17 @@ const routes: RouteRecordRaw[] = [
         meta: { requiresActivation: false },
     },
     {
-        path: '/configuration',
-        name: 'Configuration',
-        component: ConfigurationView,
-        meta: { requiresConfiguration: true }, // Meta para verificar o estado de configuração
+        path: '/settings',
+        name: 'Settings',
+        component: SettingsView,
+        meta: { requiresActivation: true },
     },
     {
         path: '/health',
-        name: 'Status',
-        component: StatusView,
-        meta: { requiresActivation: true, requiresConfiguration: true }, // Meta para verificar ativação e configuração
-    },*/
+        name: 'Health',
+        component: HealthView,
+        meta: { requiresActivation: true },
+    }
 ];
 
 const router = createRouter({
@@ -42,19 +44,19 @@ router.beforeEach((to, from, next) => {
         if (state.isActivated) {
 
             next('/health');
-      } else {
+        } else {
 
             next('/activation');
-      }
+        }
     }
     else if (to.meta.requiresActivation && !state.isActivated) {
 
         next('/activation');
     } else {
 
-      next();
+        next();
     }
-  });
-  
+});
+
 
 export default router;
