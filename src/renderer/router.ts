@@ -1,16 +1,21 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import ActivationView from './views/activation/activation.view.vue';
-/*import ConfigurationView from './components/configuration.view.vue';
-import StatusView from './components/status.view.vue';*/
+import { state } from './store';
 
-const routes = [
-    { path: '/', redirect: '/activation' },
+const routes: RouteRecordRaw[] = [
+    {
+        path: '/',
+        name: 'Redirector',
+        component: {
+            template: '<div></div>', // Placeholder component for redirection
+        },
+    },
     {
         path: '/activation',
         name: 'Activation',
         component: ActivationView,
-        meta: { requiresActivation: true }, // Meta para verificar o estado de ativação
-    }/*,
+        meta: { requiresActivation: false },
+    },
     {
         path: '/configuration',
         name: 'Configuration',
@@ -30,32 +35,23 @@ const router = createRouter({
     routes,
 });
 
-// Funções simuladas para verificar o estado de ativação e configuração
-function isActivated() {
-    return localStorage.getItem('activated') === 'true';
-}
-
-function isConfigured() {
-    return localStorage.getItem('configured') === 'true';
-}
-
 // Middleware para controle de navegação
 router.beforeEach((to, from, next) => {
-    if (to.meta.requiresActivation && !isActivated()) {
-      // Só redireciona para "Activation" se não estiver lá
-      if (to.name !== 'Activation') {
-        next({ name: 'Activation' });
+
+    if (to.name === 'Redirector') {
+        if (state.isActivated) {
+
+            next('/health');
       } else {
-        next();
+
+            next('/activation');
       }
-    } else if (to.meta.requiresConfiguration && !isConfigured()) {
-      // Só redireciona para "Configuration" se não estiver lá
-      if (to.name !== 'Configuration') {
-        next({ name: 'Configuration' });
-      } else {
-        next();
-      }
+    }
+    else if (to.meta.requiresActivation && !state.isActivated) {
+
+        next('/activation');
     } else {
+
       next();
     }
   });
