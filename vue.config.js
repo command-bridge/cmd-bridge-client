@@ -9,6 +9,9 @@ module.exports = defineConfig({
         target: 'electron-renderer',
         resolve: {
             extensions: ['.ts', '.js', '.vue'],
+            alias: {
+                '@configs': path.resolve(__dirname, 'configs'),
+            },
         },
     },
     publicPath: './',
