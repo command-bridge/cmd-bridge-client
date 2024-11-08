@@ -9,6 +9,12 @@ export class ActivationController implements IController {
 
         return ActivationService.sendActivate(activationCode);
     }
+
+    @RegisterIPC('is-activated')
+    public static isActivated() {
+
+        return ActivationService.isActivated();
+    }
 }
 
 

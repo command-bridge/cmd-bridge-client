@@ -34,9 +34,9 @@ export class IPCHandlerResponse {
         return this.serializableData.errorMessage;
     }
 
-    public getResponse() {
+    public getResponse<T>() {
 
-        return this.serializableData.response;
+        return this.serializableData.response as unknown as Promise<T>;
     }
 
     public static From(response: SerializableResponse) {

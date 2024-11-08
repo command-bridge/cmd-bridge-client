@@ -5,6 +5,7 @@ require('electron-reload')(path.join(__dirname, '..', 'dist'), {
 });
 
 import { loadControllers } from './process/modules/controllers';
+import { APP_NAME } from '../configs/consts';
 
 let mainWindow: BrowserWindow;
 
@@ -12,6 +13,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    title: APP_NAME,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false

@@ -1,5 +1,5 @@
 import { IPCHandlerResponse } from "../../core/ipc-handler-response";
-import { setAccessToken } from "../../core/store";
+import { getAccessToken, setAccessToken } from "../../core/store";
 
 export class ActivationService {
 
@@ -7,7 +7,7 @@ export class ActivationService {
 
         console.log('Get code (2)', activationCode);
 
-        if (activationCode.length === 6) {
+        if (activationCode.length < 6) {
 
             return IPCHandlerResponse.Error('Wrong activation code');
         }
@@ -15,5 +15,10 @@ export class ActivationService {
         setAccessToken(activationCode.toString());
 
         return IPCHandlerResponse.Success({ access_token: 'abcd-1234' });
+    }
+
+    public static isActivated() {
+
+        return IPCHandlerResponse.Success(getAccessToken() !== '' ? true : false)
     }
 }
