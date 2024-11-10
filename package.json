@@ -7,7 +7,7 @@
     "lint": "eslint --ext .ts,.vue src",
     "vue:serve": "vue-cli-service serve",
     "tsc:watch": "tsc --watch",
-    "electron:start": "cross-env NODE_ENV=development BUILD_TARGET=electron electron dist/main.js",
+    "electron:start": "cross-env NODE_ENV=development BUILD_TARGET=electron electron dist/src/main.js",
     "vue:build": "vue-cli-service build",
     "serve": "concurrently \"npm run vue:serve\" \"npm run tsc:watch\"",
     "build:webpack": "webpack --config webpack.config.js"
