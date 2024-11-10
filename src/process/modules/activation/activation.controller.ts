@@ -5,13 +5,13 @@ import { IController } from "../controllers";
 export class ActivationController implements IController {
 
     @RegisterIPC('activation')
-    public static sendActivate(activationCode: string) {
+    public sendActivate(activationCode: string) {
 
         return ActivationService.sendActivate(activationCode);
     }
 
     @RegisterIPC('is-activated')
-    public static isActivated() {
+    public isActivated() {
 
         return ActivationService.isActivated();
     }

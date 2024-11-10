@@ -14,8 +14,10 @@ export async function loadInitialData() {
 
         state.isActivated = await IPCHandlerResponse.From(await ipcRenderer.invoke('is-activated')).getResponse<IPCResponseIsActivated>();
     } catch (error) {
+
         console.error('Error retrieving isActivated status:', error);
     } finally {
+
         state.loaded = true;
     }
 };
