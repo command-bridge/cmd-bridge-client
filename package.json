@@ -18,9 +18,11 @@
   "description": "",
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "axios": "^1.7.7",
     "electron-store": "^8.2.0",
     "i18next": "^23.16.4",
     "install": "^0.13.0",
+    "node-machine-id": "^1.1.12",
     "npm": "^10.9.0",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",
