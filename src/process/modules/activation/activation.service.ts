@@ -1,20 +1,25 @@
+import { APIClientService } from "../../core/api-client.service";
 import { IPCHandlerResponse } from "../../core/ipc-handler-response";
-import { getAccessToken, setAccessToken } from "../../core/store";
+import { getAccessToken, setAccessToken, setEnvironment } from "../../core/store";
+import { machineIdSync } from 'node-machine-id';
+import { DeviceActivateDto } from "./device-activate.dto";
+import { AuthenticateService } from "../../core/authenticate.service";
 
 export class ActivationService {
 
-    public static sendActivate(activationCode: string) {
+    public static async sendActivate(activationCode: string) {
 
-        console.log('Get code (2)', activationCode);
+        const result = await APIClientService.post<DeviceActivateDto>('device/activate', {
+            activation_code: activationCode,
+            device_hash: machineIdSync(true)
+        });
 
-        if (activationCode.length < 6) {
+        setAccessToken(result.data.integration_token);
+        setEnvironment(result.data.environment);
 
-            return IPCHandlerResponse.Error('Wrong activation code');
-        }
+        await AuthenticateService.initiate();
 
-        setAccessToken(activationCode.toString());
-
-        return IPCHandlerResponse.Success({ access_token: 'abcd-1234' });
+        return IPCHandlerResponse.Success({ access_token: result.data.integration_token });
     }
 
     public static isActivated() {

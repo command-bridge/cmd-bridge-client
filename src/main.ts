@@ -14,6 +14,7 @@ if (devMode) {
 
 import { loadControllers } from './process/modules/controllers';
 import { APP_NAME } from '../configs/consts';
+import { AuthenticateService } from './process/core/authenticate.service';
 
 let mainWindow: BrowserWindow;
 
@@ -35,7 +36,7 @@ function createWindow() {
         mainWindow.webContents.openDevTools();
     } else {
         mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
-    }    
+    }
 
     mainWindow.on('closed', () => {
         mainWindow = null!;
@@ -56,7 +57,9 @@ app.on('activate', () => {
     }
 });
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
 
     loadControllers();
+
+    await AuthenticateService.initiate();
 });
