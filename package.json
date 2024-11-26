@@ -1,6 +1,6 @@
 {
   "name": "command-bridge-client",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "dist/main.js",
   "scripts": {
     "tsc:build": "tsc",
@@ -12,7 +12,8 @@
     "electron:build": "webpack --config webpack.config.js",
     "serve": "concurrently \"npm run vue:serve\" \"npm run tsc:watch\"",
     "build:webpack": "webpack --config webpack.config.js",
-    "build": "npm run vue:build && npm run electron:build && electron-builder"
+    "build": "npm run vue:build && npm run electron:build && electron-builder --publish=never",
+    "publish": "electron-builder --publish=always"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +23,7 @@
     "@mdi/font": "^7.4.47",
     "axios": "^1.7.7",
     "electron-store": "^8.2.0",
+    "electron-updater": "^6.3.9",
     "i18next": "^23.16.4",
     "install": "^0.13.0",
     "node-machine-id": "^1.1.12",
@@ -32,6 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.8.7",
+    "@types/semver": "^7.5.8",
     "@types/vue-router": "^2.0.0",
     "@types/webpack-env": "^1.18.5",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
@@ -77,6 +80,13 @@
       "target": [
         "AppImage"
       ]
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "command-bridge",
+        "repo": "cmd-bridge-client"
+      }
+    ]
   }
 }
