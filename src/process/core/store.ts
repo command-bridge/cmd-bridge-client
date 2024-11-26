@@ -27,6 +27,10 @@ export function getAccessToken() {
     return store.get('access_token');
 }
 
+export function getAutoStartup() {
+    return store.get('auto_startup');
+}
+
 export function getAllSettings() {
     return store.store;
 }

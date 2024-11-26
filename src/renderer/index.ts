@@ -1,3 +1,4 @@
+import './app.css';
 import { createApp } from 'vue';
 import App from './App.vue';
 
@@ -16,7 +17,7 @@ loadInitialData().then(() => {
     // Only create the app and start the router after state is loaded
     const vuetify = createVuetify({
         components,
-        directives,
+        directives,      
     })
 
     const app = createApp(App);
@@ -25,5 +26,9 @@ loadInitialData().then(() => {
     app.use(router);
 
     app.mount('#app');
+}).catch(error => {
+
+    console.error('Failed loading initial data:');
+    console.error(error);
 });
 

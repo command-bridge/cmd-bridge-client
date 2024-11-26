@@ -2,6 +2,8 @@ const { defineConfig } = require('@vue/cli-service');
 const path = require('path');
 
 module.exports = defineConfig({
+    outputDir: 'dist/renderer',
+    publicPath: './', 
     transpileDependencies: [
         'vuetify'
     ],
@@ -26,7 +28,6 @@ module.exports = defineConfig({
             rendererProcessFile: path.resolve(__dirname, 'src/renderer/index.ts'),
             nodeIntegration: true,
             contextIsolation: false,
-            outputDir: 'dist'
         }
     },
     chainWebpack: config => {

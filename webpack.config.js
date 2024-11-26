@@ -1,26 +1,34 @@
-const isElectron = process.env.BUILD_TARGET === 'electron';
+const path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: './src/main.ts',
-  target: isElectron ? 'electron-renderer' : 'web',
-  devServer: isElectron ? undefined : {
-    hot: false,
-    liveReload: false,
+  entry: './src/main.ts', // Entry for the main process
+  mode: 'production',
+  target: 'electron-main',
+  resolve: {
+    extensions: ['.ts', '.js'],
+    alias: {
+      'electron-reload': false,
+    },        
   },
   module: {
     rules: [
       {
         test: /\.ts$/,
         use: 'ts-loader',
-        exclude: /node_modules/
-      }
-    ]
-  },
-  resolve: {
-    extensions: ['.ts', '.js']
+        exclude: /node_modules/,
+      },
+    ],
   },
   output: {
-    filename: 'bundle.js',
-    path: __dirname + '/dist'
-  }
+    filename: 'main.js', // Output file for the main process
+    path: path.resolve(__dirname, 'dist'), // Ensure this matches your Electron builder config
+  },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'assets', to: 'assets' }, // Copy assets
+      ],
+    }),
+  ],
 };

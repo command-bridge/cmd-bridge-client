@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import ActivationView from './views/activation/activation.view.vue';
 import SettingsView from './views/settings/settings.view.vue';
 import HealthView from './views/health/health.view.vue';
@@ -33,7 +33,7 @@ const routes: RouteRecordRaw[] = [
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes,
 });
 

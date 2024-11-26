@@ -24,6 +24,11 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.vue"
+    "src/**/*.vue",
+    "assets/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/renderer"    
   ]
 }
