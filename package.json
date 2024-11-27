@@ -86,7 +86,6 @@
         "provider": "github",
         "owner": "command-bridge",
         "repo": "cmd-bridge-client",
-        "tag": "latest",
         "releaseType": "release"        
       }
     ]
