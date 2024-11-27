@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { getBackendAPIAddress } from './store';
 
 function applyInterceptor(apiClient: AxiosInstance) {
 
@@ -37,7 +38,7 @@ export class APIClientService {
         if (!this.apiClient) {
 
             this.apiClient = axios.create({
-                baseURL: 'http://localhost:3000',
+                baseURL: getBackendAPIAddress(),
                 headers: {
                     'Content-Type': 'application/json',
                 },

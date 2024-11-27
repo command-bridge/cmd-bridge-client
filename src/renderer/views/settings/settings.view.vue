@@ -5,10 +5,18 @@
 
             <v-card-text>
                 <!-- Server Address (Read-only) -->
-                <v-text-field label="Server Address" :value="serverAddress" readonly prepend-icon="mdi-server" />
+                <v-text-field 
+                    label="Backend API Address" 
+                    :value="settings.backend_api_address" 
+                    readonly 
+                    prepend-icon="mdi-server" 
+                />
 
                 <!-- Auto-Start Checkbox -->
-                <v-checkbox label="Start with Windows" v-model="settings.auto_startup" />
+                <v-checkbox 
+                    label="Start with Windows" 
+                    v-model="settings.auto_startup" 
+                />
 
                 <!-- Reset Button -->
                 <v-btn color="error" @click="resetSettings" block>
@@ -17,16 +25,17 @@
             </v-card-text>
         </v-card>
     </v-container>
+
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from 'vue';
-import { SERVER_ADDRESS } from '@configs/consts';
+import { defineComponent, onMounted, ref, watch } from 'vue';
 import { IPCHandlerResponse } from '../../../process/core/ipc-handler-response';
 import { CommandBridgeClientStore } from '../../../process/core/store';
 import { loadInitialData } from '../../../renderer/store';
 import { ipcRenderer } from 'electron';
 import { useRouter } from 'vue-router';
+import { STORE_DEFAULTS } from '../../../types/defaults';
 
 export default defineComponent({
 
@@ -34,15 +43,18 @@ export default defineComponent({
     setup() {
 
         const router = useRouter();
-        const settings = ref<CommandBridgeClientStore>({ auto_startup: true, access_token: ''});
+        const settings = ref<CommandBridgeClientStore>(STORE_DEFAULTS);
 
         onMounted(async () => {
 
             settings.value = await IPCHandlerResponse.From(await ipcRenderer.invoke('get-settings')).getResponse<CommandBridgeClientStore>();
-        });
+        
+            watch(settings, async (newSettings) => {
 
-        // Server address (from constants, read-only)
-        const serverAddress = SERVER_ADDRESS;
+                const plainSettings = JSON.parse(JSON.stringify(newSettings));
+                await ipcRenderer.invoke('update-settings', plainSettings)
+            }, { deep: true });
+        });
 
         // Method to reset settings
         const resetSettings = async () => {
@@ -57,12 +69,11 @@ export default defineComponent({
 
                 await loadInitialData();
 
-                router.push('/');                
+                router.push('/');
             }
         }
 
         return {
-            serverAddress,
             settings,
             resetSettings,
         };

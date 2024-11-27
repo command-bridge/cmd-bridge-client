@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import ActivationView from './views/activation/activation.view.vue';
 import SettingsView from './views/settings/settings.view.vue';
 import HealthView from './views/health/health.view.vue';
+import HomeView from './views/home/home.view.vue';
 import { state } from './store';
 
 const routes: RouteRecordRaw[] = [
@@ -28,6 +29,12 @@ const routes: RouteRecordRaw[] = [
         path: '/health',
         name: 'Health',
         component: HealthView,
+        meta: { requiresActivation: true },
+    },
+    {
+        path: '/home',
+        name: 'Home',
+        component: HomeView,
         meta: { requiresActivation: true },
     }
 ];

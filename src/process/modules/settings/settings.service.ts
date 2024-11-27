@@ -1,5 +1,5 @@
 import { IPCHandlerResponse } from "../../core/ipc-handler-response";
-import { getAllSettings, resetSettings } from "../../core/store";
+import { CommandBridgeClientStore, getAllSettings, resetSettings, updateSettings } from "../../core/store";
 
 export class SettingsService {
 
@@ -13,5 +13,12 @@ export class SettingsService {
         resetSettings();
 
         return IPCHandlerResponse.Success(getAllSettings());
-    }    
+    }
+
+    public static updateSettings(updatedSettings: CommandBridgeClientStore) {
+
+        updateSettings(updatedSettings)
+
+        return IPCHandlerResponse.Success(true);
+    }      
 }

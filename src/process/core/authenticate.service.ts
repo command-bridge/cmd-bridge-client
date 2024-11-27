@@ -1,6 +1,6 @@
 import { machineIdSync } from "node-machine-id";
 import { APIClientService } from "./api-client.service";
-import { getAccessToken, getAllSettings } from "./store";
+import { getAllSettings } from "./store";
 
 type DeviceLoginDto = { 
     token: string;

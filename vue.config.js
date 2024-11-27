@@ -1,7 +1,12 @@
 const { defineConfig } = require('@vue/cli-service');
 const path = require('path');
 
+process.env.VUE_APP_BUILD_DATE = new Date().toISOString();
+
 module.exports = defineConfig({
+    devServer: {
+        port: 8090,
+    },
     outputDir: 'dist/renderer',
     publicPath: './', 
     transpileDependencies: [

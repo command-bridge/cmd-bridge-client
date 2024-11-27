@@ -7,8 +7,9 @@ import { getAutoStartup } from './process/core/store';
 import { triggerUpdate } from './process/core/trigger-update';
 import { isDevelopment } from './shared/helpers/is-development.helper';
 
-if (isDevelopment()) {
+console.log('Version', process.env.npm_package_version);
 
+if (isDevelopment()) {
     // supports hot-reload for electron when using ts-node
     require('electron-reload')(path.join(__dirname, '..', 'dist'), {
         electron: path.join(__dirname, '../..', 'node_modules', '.bin', 'electron')
@@ -18,7 +19,7 @@ if (isDevelopment()) {
 let mainWindow: BrowserWindow;
 let tray: Tray | null = null;
 
-const ApplicationIcon = path.join(__dirname, 'assets/icon.png');
+const ApplicationIcon = isDevelopment() ?  path.join(__dirname, '../assets/icon.png') : path.join(__dirname, 'assets/icon.png');
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -73,15 +74,15 @@ function createWindow() {
             nodeIntegration: true,
             contextIsolation: false
         },
-        autoHideMenuBar: !isDevelopment(),
-        frame: !isDevelopment(),
+        autoHideMenuBar: isDevelopment() ? false : true,
+        frame: isDevelopment() ? true : false,
         resizable: isDevelopment(),
         fullscreenable: isDevelopment(),
     });
 
     if (isDevelopment()) {
 
-        mainWindow.loadURL('http://localhost:8080');
+        mainWindow.loadURL('http://localhost:8090');
         mainWindow.webContents.openDevTools();
     } else {
         mainWindow.loadFile(path.join(__dirname, 'renderer/index.html'));
