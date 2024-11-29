@@ -24,15 +24,18 @@
     "axios": "^1.7.7",
     "electron-store": "^8.2.0",
     "electron-updater": "^6.3.9",
+    "eventsource": "^2.0.2",
     "i18next": "^23.16.4",
     "install": "^0.13.0",
     "node-machine-id": "^1.1.12",
     "npm": "^10.9.0",
+    "reflect-metadata": "^0.2.2",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",
     "vuetify": "^3.7.3"
   },
   "devDependencies": {
+    "@types/eventsource": "^1.1.15",
     "@types/node": "^22.8.7",
     "@types/semver": "^7.5.8",
     "@types/vue-router": "^2.0.0",
@@ -86,7 +89,7 @@
         "provider": "github",
         "owner": "command-bridge",
         "repo": "cmd-bridge-client",
-        "releaseType": "release"        
+        "releaseType": "release"
       }
     ]
   }

@@ -56,51 +56,60 @@
   </template>
   
   <script lang="ts">
-  import { defineComponent, ref, onMounted } from 'vue';
+  import { defineComponent, ref, onMounted, onUnmounted } from "vue";
+  import { ipcRenderer } from "electron";
   
   export default defineComponent({
-    name: 'HealthScreen',
+    name: "HealthScreen",
     setup() {
-      // Example data - replace with real data or methods to fetch these stats
-      const isConnected = ref(true); // Connection status
-      const sessionDuration = ref(3600); // Session duration in seconds
-      const totalUptime = ref(86400); // Total uptime in seconds (24 hours)
-      const connectionIntegrity = ref(95); // Connection integrity in percentage
-      const connectionErrors = ref(3); // Total connection errors
-      const packetLoss = ref(0.2); // Packet loss in percentage
+      const isConnected = ref(false);
+      const sessionDuration = ref(0);
+      const totalUptime = ref(0);
+      const connectionErrors = ref(0);
+      const packetLoss = ref(0.2); // Perda de pacotes em percentual
+      const connectionIntegrity = ref(95); // Perda de pacotes em percentual
   
-      // Example timer update - simulates uptime increment
+      const handleStatusUpdate = (
+        event: any,
+        status: {
+          isConnected: boolean;
+          sessionDuration: number;
+          totalUptime: number;
+          connectionErrors: number;
+        }
+      ) => {
+        isConnected.value = status.isConnected;
+        sessionDuration.value = status.sessionDuration;
+        totalUptime.value = status.totalUptime;
+        connectionErrors.value = status.connectionErrors;
+      };
+  
       onMounted(() => {
-        setInterval(() => {
-          sessionDuration.value += 1;
-          totalUptime.value += 1;
-        }, 1000); // Update every second
+        ipcRenderer.on("sse-status-update", handleStatusUpdate);
+  
+        onUnmounted(() => {
+          ipcRenderer.removeListener("sse-status-update", handleStatusUpdate);
+        });
       });
   
-      // Helper method to format time in HH:mm:ss
       const formatTime = (seconds: number) => {
         const h = Math.floor(seconds / 3600);
         const m = Math.floor((seconds % 3600) / 60);
         const s = seconds % 60;
-        return [h, m, s].map((v) => String(v).padStart(2, '0')).join(':');
+        return [h, m, s].map((v) => String(v).padStart(2, "0")).join(":");
       };
   
       return {
         isConnected,
         sessionDuration,
         totalUptime,
-        connectionIntegrity,
         connectionErrors,
-        packetLoss,
         formatTime,
+        packetLoss,
+        connectionIntegrity,
       };
     },
   });
   </script>
   
-  <style scoped>
-  .v-icon {
-    margin-right: 10px;
-  }
-  </style>
   

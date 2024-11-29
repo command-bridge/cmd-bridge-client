@@ -1,5 +1,10 @@
 import axios, { AxiosInstance } from 'axios';
 import { getBackendAPIAddress } from './store';
+import http from "http";
+
+const customAgent = new http.Agent({
+    keepAlive: true,
+});
 
 function applyInterceptor(apiClient: AxiosInstance) {
 
@@ -10,7 +15,7 @@ function applyInterceptor(apiClient: AxiosInstance) {
 
             if (!hasRequiresTokenConfig || (hasRequiresTokenConfig && config.requiresToken !== false)) {
 
-                const token = await APIClientService.getToken();
+                const token = APIClientService.getToken();
                 if (token) {
                     config.headers['Authorization'] = `Bearer ${token}`;
                 }
@@ -30,7 +35,12 @@ export class APIClientService {
 
     static getToken() {
 
-        return Promise.resolve('xyz');
+        return this.token;
+    }
+
+    static setToken(token: string) {
+
+        this.token = token;
     }
 
     static getClient() {
@@ -42,6 +52,8 @@ export class APIClientService {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                timeout: 30000,
+                httpAgent: customAgent
             });
 
             applyInterceptor(this.apiClient);

@@ -1,6 +1,7 @@
 import { machineIdSync } from "node-machine-id";
 import { APIClientService } from "./api-client.service";
 import { getAllSettings } from "./store";
+import { SSEService } from "./sse-service";
 
 type DeviceLoginDto = { 
     token: string;
@@ -27,6 +28,7 @@ export class AuthenticateService {
 
         this.sessionToken = result.data.token;
 
-        console.log('Token loaded', this.sessionToken);
+        APIClientService.setToken(this.sessionToken);
+        SSEService.initiate();
     }
 }

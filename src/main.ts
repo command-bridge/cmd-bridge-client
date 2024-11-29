@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { app, BrowserWindow, Menu, Tray } from 'electron';
 import path from 'path';
 import { loadControllers } from './process/modules/controllers';
@@ -7,7 +8,7 @@ import { getAutoStartup } from './process/core/store';
 import { triggerUpdate } from './process/core/trigger-update';
 import { isDevelopment } from './shared/helpers/is-development.helper';
 
-console.log('Version', process.env.npm_package_version);
+console.log('Version', app.getVersion());
 
 if (isDevelopment()) {
     // supports hot-reload for electron when using ts-node
@@ -57,7 +58,6 @@ if (!gotTheLock) {
     app.whenReady().then(async () => {
     
         loadControllers();
-        triggerUpdate();
     
         await AuthenticateService.initiate();
     });
