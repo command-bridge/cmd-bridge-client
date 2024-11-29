@@ -30,7 +30,7 @@ export class SSEService {
         try {
 
             await this.client.post<SSEToken>("/device-events", {
-                version: app.getVersion(),
+                version: process.env.npm_package_version,
             });
 
             const token = APIClientService.getToken();

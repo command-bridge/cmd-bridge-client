@@ -8,7 +8,7 @@ import { getAutoStartup } from './process/core/store';
 import { triggerUpdate } from './process/core/trigger-update';
 import { isDevelopment } from './shared/helpers/is-development.helper';
 
-console.log('Version', app.getVersion());
+console.log('Version', process.env.npm_package_version);
 
 if (isDevelopment()) {
     // supports hot-reload for electron when using ts-node

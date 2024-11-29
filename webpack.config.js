@@ -1,5 +1,7 @@
 const path = require('path');
+const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const packageJson = require('./package.json');
 
 module.exports = {
   entry: './src/main.ts', // Entry for the main process
@@ -29,6 +31,9 @@ module.exports = {
       patterns: [
         { from: 'assets', to: 'assets' }, // Copy assets
       ],
+    }),
+    new webpack.DefinePlugin({
+      'process.env.npm_package_version': JSON.stringify(packageJson.version),
     }),
   ],
 };
