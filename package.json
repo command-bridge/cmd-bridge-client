@@ -46,7 +46,7 @@
     "@vue/compiler-sfc": "^3.5.12",
     "concurrently": "^9.0.1",
     "cross-env": "^7.0.3",
-    "electron": "^33.0.2",
+    "electron": "^27.3.11",
     "electron-builder": "^25.1.8",
     "electron-reload": "^2.0.0-alpha.1",
     "eslint": "^9.14.0",
