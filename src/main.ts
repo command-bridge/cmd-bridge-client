@@ -5,7 +5,6 @@ import { loadControllers } from './process/modules/controllers';
 import { APP_NAME } from '../configs/consts';
 import { AuthenticateService } from './process/core/authenticate.service';
 import { getAutoStartup } from './process/core/store';
-import { triggerUpdate } from './process/core/trigger-update';
 import { isDevelopment } from './shared/helpers/is-development.helper';
 
 console.log('Version', process.env.npm_package_version);
