@@ -15,20 +15,23 @@ interface SSEToken {
 export class SSEService {
     private static client = APIClientService.getClient();
     private static eventSource: EventSource | null = null;
-    private static connectionStatus: "connected" | "disconnected" = "disconnected";
     private static sessionStartTime: Date | null = null;
+    private static lastAttemptConnectionTimestamp: number = 0;
     private static totalUptimeStart = Date.now();
     private static connectionErrors = 0;
 
     public static async initiate() {
         await this.connect();
         setInterval(() => this.sendStatusToRenderer(), 1000);
+        this.connectionHealthCheck();
     }
 
     private static async connect() {
         logger.info('Connecting to SSE');
 
         try {
+
+            this.lastAttemptConnectionTimestamp = Date.now();
 
             await this.client.post<SSEToken>("/device-events", {
                 version: process.env.npm_package_version,
@@ -41,14 +44,13 @@ export class SSEService {
 
             this.eventSource.onopen = () => {
                 logger.info('Connected to SSE');
-                this.updateConnectionStatus("connected");
                 this.sessionStartTime = new Date();
             };
 
             this.eventSource.onmessage = (event) => {
                 const message = JSON.parse(event.data);
                 SSEHandler.handleMessage(message);
-            };
+            };        
 
             this.eventSource.onerror = async (error) => {
                 logger.error('SSE error', error);
@@ -68,13 +70,28 @@ export class SSEService {
         }
     }
 
+    private static async connectionHealthCheck() {
+
+        setInterval(() => {
+
+            const lastConnectionAttemptWasOlderThan30Seconds = Date.now() - (1000 * 30) > this.lastAttemptConnectionTimestamp;
+
+            if ((!this.eventSource || !this.isConnected()) && lastConnectionAttemptWasOlderThan30Seconds) {
+                logger.warn("Connection appears to be closed. Reconnecting...");
+                this.reconnect();
+            }
+        }, 5000);        
+    }
+
     private static async reconnect() {
 
-        this.updateConnectionStatus("disconnected");
         this.connectionErrors++;
         
         if (this.eventSource) {
             this.eventSource.close();
+
+            await new Promise((resolve) => setTimeout(resolve, 100)); 
+
             this.eventSource = null;
         }
 
@@ -84,8 +101,11 @@ export class SSEService {
         await this.connect();
     }
 
-    private static updateConnectionStatus(status: "connected" | "disconnected") {
-        this.connectionStatus = status;
+    private static isConnected() {
+
+        const state = this.eventSource?.readyState || EventSource.CLOSED;
+
+        return state === EventSource.OPEN;
     }
 
     private static sendStatusToRenderer() {
@@ -95,7 +115,7 @@ export class SSEService {
         const totalUptime = Math.floor((Date.now() - this.totalUptimeStart) / 1000);
 
         const status = {
-            isConnected: this.connectionStatus === "connected",
+            isConnected: this.isConnected(),
             sessionDuration,
             totalUptime,
             connectionErrors: this.connectionErrors,
