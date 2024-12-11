@@ -5,6 +5,7 @@ import { createWriteStream, existsSync, mkdirSync, readFileSync, renameSync, rmS
 import { APIClientService } from "../api-client.service";
 import { Readable } from "stream";
 import { AxiosResponse } from "axios";
+import logger from "../logger";
 
 function downloadedString(downloadedSize: number, totalSize: number | null) {
 
@@ -53,7 +54,7 @@ export class PackagesFileService {
                     releaseDate: parsedContent.releaseDate
                 } as PackageItem;
             } catch (err) {
-                console.error(
+                logger.error(
                     `Failed parsing latest.json for /packages/global/${packageName}.`,
                     err,
                 );
@@ -99,7 +100,7 @@ export class PackagesFileService {
 
             const { ["content-length"]: contentLength, "content-type": contentType } = headers;
     
-            console.log(name, downloadType, contentLength, contentType);
+            logger.info('Downloading package:', [ name, downloadType, contentLength, contentType ]);
     
             const allowedTypes = ['application/octet-stream', 'application/json']
 
@@ -120,24 +121,24 @@ export class PackagesFileService {
     
             return new Promise<void>((resolve, reject) => {
                 writer.on('finish', () => {
-                    console.log(`File downloaded: ${outputFile}`);
+                    logger.info('File downloaded:', outputFile);
                     resolve();
                 });
     
                 writer.on('error', async (err) => {
-                    console.error(`Error writing file @ ${downloadedString(downloadedSize, totalSize)}`);
+                    logger.error(`Error writing file @ ${downloadedString(downloadedSize, totalSize)}`);
 
                     if (existsSync(outputFile)) unlinkSync(outputFile);
                     reject(err);
                 });
     
                 data.on('error', (err) => {
-                    console.error(`Error receiving the stream @ ${downloadedString(downloadedSize, totalSize)}`);
+                    logger.error(`Error receiving the stream @ ${downloadedString(downloadedSize, totalSize)}`);
                     reject(err);
                 });
             });
         } catch (err) {
-            console.error(`Error downloading package ${name}, ${downloadType}:`, err);
+            logger.error(`Error downloading package ${name}, ${downloadType}:`, err);
             throw err;
         }
     }

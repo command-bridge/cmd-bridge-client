@@ -1,6 +1,7 @@
 import { NsisUpdater } from "electron-updater"
 import { isDevelopment } from "../../shared/helpers/is-development.helper";
 import { UPDATE_FEED_URL } from "../../../configs/consts";
+import logger from "./logger";
 
 export async function triggerUpdate() {
 
@@ -12,24 +13,24 @@ export async function triggerUpdate() {
 
     if(result?.updateInfo) {
 
-        console.log('Updating to ', result.updateInfo.version);
+        logger.info('Updating to ', result.updateInfo.version);
     }
 
     autoUpdater.on('update-available', () => {
-        console.log('Update available. Downloading...');
+        logger.info('Update available. Downloading...');
     });
 
     autoUpdater.on('update-not-available', () => {
-        console.log('No updates available.');
+        logger.info('No updates available.');
     });
 
     autoUpdater.on('update-downloaded', () => {
-        console.log('Update downloaded. Ready to install.');
+        logger.info('Update downloaded. Ready to install.');
         // Quit and install the update
         autoUpdater.quitAndInstall();
     });
 
     autoUpdater.on('error', (err) => {
-        console.error('Error during update process:', err);
+        logger.error('Error during update process:', err);
     });
 }

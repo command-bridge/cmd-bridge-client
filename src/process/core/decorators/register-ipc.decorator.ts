@@ -1,5 +1,6 @@
 import { ipcMain, IpcMainEvent, IpcMainInvokeEvent } from 'electron';
 import { IPCHandlerResponse } from '../ipc-handler-response';
+import logger from '../logger';
 
 function RegisterIPC(channel: string) {
   return function (target: any, propertyKey: string, descriptor?: PropertyDescriptor) {
@@ -10,7 +11,7 @@ function RegisterIPC(channel: string) {
 
     const originalMethod = descriptor.value;
 
-    console.log('Registering channel', channel, target.name);
+    logger.info('Registering channel', [ channel, target.name ]);
 
     ipcMain.handle(channel, async (event: IpcMainInvokeEvent, ...args: any[]) => {
       return (await originalMethod.apply(target, args) as IPCHandlerResponse).getSerializable();

@@ -8,6 +8,7 @@ import { UUID } from "crypto";
 import { extractAll } from "@electron/asar";
 import { ChildProcess, fork, Serializable } from "child_process";
 import { isDevelopment } from "../../../shared/helpers/is-development.helper";
+import logger from "../logger";
 
 interface IPackage {
     callableMethods: string[],
@@ -90,7 +91,7 @@ export class PackagesManagerService {
         try {
             // Extrai o conteúdo do .asar, se necessário
             if (!existsSync(extractDir)) {
-                console.log(`Extracting ${asarPath} to ${extractDir}`);
+                logger.info(`Extracting ${asarPath} to ${extractDir}`);
                 extractAll(asarPath, extractDir);
             }
     
@@ -100,30 +101,30 @@ export class PackagesManagerService {
 
                 if (child.stdout) {
                     child.stdout.on('data', (data) => {
-                        console.log(`[${name}] ${data.toString()}`);
+                        logger.info(`[${name}] ${data.toString()}`);
                     });
                 }
 
                 if (child.stderr) {
                     child.stderr.on('data', (data) => {
-                        console.error(`[${name}] ${data.toString()}`);
+                        logger.info(`[${name}] ${data.toString()}`);
                     });
                 }
 
                 child.on('message', (message) => {
-                    console.log(`[${name}] Message from child process:`, message);
+                    logger.info(`[${name}] Message from child process:`, message);
                 });
 
                 child.on('error', (err) => {
-                    console.error(`[${name}] Message from child process:`, err);
+                    logger.error(`[${name}] Message from child process:`, err);
                 });
 
                 this.loadedPackagesAsProcess.set(packageItem.name, child);
             } else {
-                console.error('Bundle file not found after extraction:', bundleFile);
+                logger.error('Bundle file not found after extraction:', bundleFile);
             }
         } catch (error) {
-            console.error('Failed to load package:', error);
+            logger.error('Failed to load package:', error);
         }
     }
 
@@ -131,31 +132,31 @@ export class PackagesManagerService {
 
         const packageBasePath = resolve(__dirname, '../../packages');
 
-        console.log('Base path', packageBasePath);
+        logger.info('Base path', packageBasePath);
 
         const asarFile = join(packageBasePath, packageItem.name, packageItem.asarFile);
         const bundleFile = join(asarFile, 'bundle.js')
 
         if(!existsSync(asarFile)) {
             
-            console.error('Asar file not found:', asarFile);
+            logger.error('Asar file not found:', asarFile);
         }
 
         if(!existsSync(bundleFile)) {
 
-            console.error('Bundle file inside asar file not found:', asarFile);
+            logger.error('Bundle file inside asar file not found:', asarFile);
         }
 
         try {
 
-            console.log(`Loading package ${bundleFile}`)
+            logger.info(`Loading package ${bundleFile}`)
             // Substitua import() por require()
             const loadedPackage = require(bundleFile) as IPackage;
     
             this.loadedPackages.set(packageItem.name, loadedPackage);
-            console.log(`Package ${packageItem.name} loaded successfully`);
+            logger.info(`Package ${packageItem.name} loaded successfully`);
         } catch (error) {
-            console.error(`Failed to load package ${packageItem.name}:`, error);
+            logger.error(`Failed to load package ${packageItem.name}:`, error);
         }
     }
 

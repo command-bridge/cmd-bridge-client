@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import './process/core/logger-renderer';
 import { app, BrowserWindow, Menu, Tray } from 'electron';
 import path from 'path';
 import { loadControllers } from './process/modules/controllers';
@@ -6,8 +7,9 @@ import { APP_NAME } from '../configs/consts';
 import { AuthenticateService } from './process/core/authenticate.service';
 import { getAutoStartup } from './process/core/store';
 import { isDevelopment } from './shared/helpers/is-development.helper';
+import logger from './process/core/logger';
 
-console.log('Version', process.env.npm_package_version);
+logger.info('Version', process.env.npm_package_version);
 
 if (isDevelopment()) {
     // supports hot-reload for electron when using ts-node

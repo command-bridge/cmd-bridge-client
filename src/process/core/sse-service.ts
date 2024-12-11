@@ -6,6 +6,7 @@ import EventSource from "eventsource";
 import { AxiosError } from "axios";
 import { SSEHandler } from "./sse-handler";
 import "../sse-services"
+import logger from "./logger";
 
 interface SSEToken {
     token: UUID;
@@ -25,7 +26,7 @@ export class SSEService {
     }
 
     private static async connect() {
-        console.log('Connecting to SSE...')
+        logger.info('Connecting to SSE');
 
         try {
 
@@ -39,7 +40,7 @@ export class SSEService {
             this.eventSource = new EventSource(url);
 
             this.eventSource.onopen = () => {
-                console.log("Connected to SSE.");
+                logger.info('Connected to SSE');
                 this.updateConnectionStatus("connected");
                 this.sessionStartTime = new Date();
             };
@@ -50,17 +51,17 @@ export class SSEService {
             };
 
             this.eventSource.onerror = async (error) => {
-                console.error("SSE connection error:", error);
+                logger.error('SSE error', error);
                 await this.reconnect();
             };
         } catch (error) {
 
             if(error instanceof AxiosError) {
 
-                console.error('Axios Error:', error.message);
+                logger.error('SSE Axios Error', error.message);
             } else {
 
-                console.error("SSE Error:", error);
+                logger.error("SSE Error:", error);
             }
 
             await this.reconnect();        
@@ -77,7 +78,7 @@ export class SSEService {
             this.eventSource = null;
         }
 
-        console.log("Reconnecting to SSE in 5s...");
+        logger.info('Reconnecting to SSE in 5s...')
         await new Promise((resolve) => setTimeout(resolve, 5000));
         
         await this.connect();

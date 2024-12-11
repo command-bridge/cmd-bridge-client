@@ -3,6 +3,7 @@ import { APIClientService } from "../core/api-client.service";
 import { SendPackagesResponse } from "../core/packages/packages.type";
 import { IPackageCallMethodPayload, PackagesManagerService } from "../core/packages/packages-manager.service";
 import { PackagesFileService } from "../core/packages/package-file.service";
+import logger from "../core/logger";
 
 export class SSEPackagesService {
 
@@ -20,7 +21,7 @@ export class SSEPackagesService {
 
         if(data.toRemove.length) {
 
-            console.log('Removing deprecated packages...')
+            logger.info('Removing deprecated packages...')
 
             for(const packageToRemove of data.toRemove) {
 
@@ -30,7 +31,7 @@ export class SSEPackagesService {
 
         if(data.toDownload.length) {
 
-            console.log('Downloading new packages...')
+            logger.info('Downloading new packages...')
         
             for(const packageItem of data.toDownload) {
 
@@ -49,7 +50,7 @@ export class SSEPackagesService {
 
         if(data.toUpdate.length) {
 
-            console.log('Updating packages...')
+            logger.info('Updating packages...')
         
             for(const packageItem of data.toUpdate) {
 
@@ -77,7 +78,7 @@ export class SSEPackagesService {
 
         const respose = await PackagesManagerService.runPackageMethod(payload);
 
-        console.log('response', respose)
+        logger.info('packageAction response:', respose)
 
         await APIClientService.post('device-events/response', respose);
     }

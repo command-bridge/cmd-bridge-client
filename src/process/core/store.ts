@@ -4,6 +4,7 @@ import { machineIdSync } from 'node-machine-id';
 import { existsSync, unlinkSync } from 'fs';
 import path from 'path';
 import { app } from 'electron';
+import logger from './logger';
 
 // Configurando o electron-store com criptografia
 export type CommandBridgeClientStore = {
@@ -24,7 +25,7 @@ function loadOrCreateNewStoreIfFail() {
         });
     } catch(error) {
     
-        console.warn('Failed to initialize the store. Resetting due to machine ID change or corrupted store.', error);
+        logger.warn('Failed to initialize the store. Resetting due to machine ID change or corrupted store.', error);
 
         try {
             const storeFileName = 'config.json';
@@ -32,10 +33,10 @@ function loadOrCreateNewStoreIfFail() {
             
             if (existsSync(storePath)) {
                 unlinkSync(storePath);
-                console.log('Store file removed successfully.');
+                logger.info('Store file removed successfully.');
             }
         } catch (fileError) {
-            console.error('Failed to remove the old store file:', fileError);
+            logger.error('Failed to remove the old store file:', fileError);
         }
     
         return new Store<CommandBridgeClientStore>({
@@ -77,4 +78,4 @@ export function updateSettings(newSettings: CommandBridgeClientStore) {
     store.set(newSettings);
 }
 
-console.log('Loaded store', store.store);
+logger.info('Loaded store', store.store);

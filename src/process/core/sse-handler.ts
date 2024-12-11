@@ -1,4 +1,5 @@
 import { getSSEActions } from "./decorators/sse-actions.decorator";
+import logger from "./logger";
 
 export interface SubjectMessage {
     action: string;
@@ -18,13 +19,13 @@ export class SSEHandler {
             const methodName = actions[message.action];
 
             if (methodName && typeof classInstance[methodName] === 'function') {
-                console.log(classInstance.name, methodName);
+                logger.info(`[SSEHandler.handleMessage] ${classInstance.name}.${String(methodName)}`)
                 classInstance[methodName](message.payload);
 
                 return;
             }
         }
 
-        console.log('No SSE handler found for message:', message)
+        logger.info('No SSE handler found for message:', message);
     }
 }
