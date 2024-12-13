@@ -19,7 +19,6 @@ export class SSEHandler {
             const methodName = actions[message.action];
 
             if (methodName && typeof classInstance[methodName] === 'function') {
-                logger.info(`[SSEHandler.handleMessage] ${classInstance.name}.${String(methodName)}`)
                 classInstance[methodName](message.payload);
 
                 return;
