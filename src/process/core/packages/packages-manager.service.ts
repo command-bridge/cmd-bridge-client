@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readdirSync } from "fs";
 import { PackageItem } from "./packages.type";
 import { PACKAGES_DIR } from "./packages.const";
 import { PackagesFileService } from "./package-file.service";
-import { join, resolve } from "path";
+import { join } from "path";
 import { APIClientService } from "../api-client.service";
 import { UUID } from "crypto";
 import { extractAll } from "@electron/asar";
@@ -130,11 +130,9 @@ export class PackagesManagerService {
 
     public static async loadPackage(packageItem: PackageItem) {
 
-        const packageBasePath = resolve(__dirname, '../../packages');
+        logger.info('Base path', PACKAGES_DIR);
 
-        logger.info('Base path', packageBasePath);
-
-        const asarFile = join(packageBasePath, packageItem.name, packageItem.asarFile);
+        const asarFile = join(PACKAGES_DIR, packageItem.name, packageItem.asarFile);
         const bundleFile = join(asarFile, 'bundle.js')
 
         if(!existsSync(asarFile)) {
