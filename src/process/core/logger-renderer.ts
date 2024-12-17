@@ -2,6 +2,8 @@ import { ipcMain } from 'electron';
 import { inspect } from 'util';
 import winston from 'winston';
 import 'winston-daily-rotate-file';
+import { getBaseLogsPath } from './helpers/get-base-logs-path.helper';
+import { join } from 'path';
 
 const logFormat = winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -13,7 +15,7 @@ const logFormat = winston.format.combine(
 );
 
 const dailyRotateFileTransportRenderer = new winston.transports.DailyRotateFile({
-    filename: 'logs/renderer-%DATE%.log',
+    filename: join(getBaseLogsPath(), 'renderer-%DATE%.log'),
     datePattern: 'YYYY-MM-DD',
     zippedArchive: true,
     maxSize: '20m',

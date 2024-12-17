@@ -1,6 +1,9 @@
+import { join } from 'path';
 import { inspect } from 'util';
 import winston from 'winston';
 import 'winston-daily-rotate-file';
+import { getBaseLogsPath } from './helpers/get-base-logs-path.helper';
+
 
 const logFormat = winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -12,7 +15,7 @@ const logFormat = winston.format.combine(
 );
 
 const dailyRotateFileTransport = new winston.transports.DailyRotateFile({
-    filename: 'logs/process-%DATE%.log',
+    filename: join(getBaseLogsPath(), 'process-%DATE%.log'),
     datePattern: 'YYYY-MM-DD',
     zippedArchive: true,
     maxSize: '20m',

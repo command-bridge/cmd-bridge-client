@@ -7,14 +7,13 @@ import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import { AxiosError } from "axios";
 import logger from "../core/logger";
+import { getBaseLogsPath } from "../core/helpers/get-base-logs-path.helper";
 
 dayjs.extend(timezone);
 
 export interface IRequestLogs {
     uuid: UUID,
 }
-
-const logDir = resolve('logs');
 
 export class SSERequestLogs {
 
@@ -37,6 +36,6 @@ export class SSERequestLogs {
         const utcDateString = dayjs().format('YYYY-MM-DD');
         const logFileName = `process-${utcDateString}.log`;
     
-        return join(logDir, logFileName);
+        return join(getBaseLogsPath(), logFileName);
     };
 }
