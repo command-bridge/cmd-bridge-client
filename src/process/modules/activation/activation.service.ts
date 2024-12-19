@@ -1,21 +1,25 @@
 import { APIClientService } from "../../core/api-client.service";
 import { IPCHandlerResponse } from "../../core/ipc-handler-response";
-import { getAccessToken, setAccessToken, setEnvironment } from "../../core/store";
-import { machineIdSync } from 'node-machine-id';
+import { getAccessToken, setAccessToken, setEnvironment, setInstallDate } from "../../core/store";
 import { DeviceActivateDto } from "./device-activate.dto";
 import { AuthenticateService } from "../../core/authenticate.service";
+import { generateDeviceHash } from "../../core/helpers/generate-device-hash.helper";
 
 export class ActivationService {
 
     public static async sendActivate(activationCode: string) {
 
+        const installDate = new Date();
+        const hash = generateDeviceHash(installDate);
+
         const result = await APIClientService.post<DeviceActivateDto>('device/activate', {
             activation_code: activationCode,
-            device_hash: machineIdSync(true)
+            device_hash: hash
         });
 
         setAccessToken(result.data.integration_token);
         setEnvironment(result.data.environment);
+        setInstallDate(installDate);
 
         await AuthenticateService.initiate();
 

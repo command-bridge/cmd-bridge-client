@@ -12,6 +12,7 @@ export type CommandBridgeClientStore = {
     environment?: string,
     auto_startup: boolean,
     backend_api_address: string;
+    install_date: string;
 }
 
 const store = loadOrCreateNewStoreIfFail();
@@ -54,6 +55,10 @@ export function setEnvironment(environment: string) {
     store.set('environment', environment);
 }
 
+export function setInstallDate(date: Date) {
+    store.set('install_date', date.toISOString());
+}
+
 export function getAccessToken() {
     return store.get('access_token');
 }
@@ -64,6 +69,10 @@ export function getAutoStartup() {
 
 export function getBackendAPIAddress() {
     return store.get('backend_api_address');
+}
+
+export function getInstallDate() {
+    return store.get('install_date');
 }
 
 export function getAllSettings() {
