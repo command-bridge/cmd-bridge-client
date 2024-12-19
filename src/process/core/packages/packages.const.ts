@@ -1,4 +1,4 @@
 import { join } from "path";
-import { cwd } from "process";
+import { getAppPath } from "../helpers/get-app-path.helper";
 
-export const PACKAGES_DIR = join(cwd(), "resources", "packages");
+export const PACKAGES_DIR = join(getAppPath(), "resources", "packages");
