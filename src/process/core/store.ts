@@ -63,6 +63,10 @@ export function getAccessToken() {
     return store.get('access_token');
 }
 
+export function getEnvironment() {
+    return store.get('environment');
+}
+
 export function getAutoStartup() {
     return store.get('auto_startup');
 }

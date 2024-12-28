@@ -4,6 +4,7 @@ import { getAllSettings, getInstallDate } from "./store";
 import { generateDeviceHash } from "./helpers/generate-device-hash.helper";
 import logger from "./logger";
 import { isTokenExpired } from "./helpers/is-token-expired.helper";
+import { getActivationSettingsOrFail } from "./helpers/get-activation-settings.helper";
 
 type DeviceLoginDto = {
     token: string;
@@ -26,14 +27,7 @@ export class AuthenticateService {
             logger.info('Token expired. Going refresh');
         }
 
-        const { access_token, environment } = getAllSettings()
-
-        if (!access_token && access_token === '') {
-
-            return;
-        }
-
-        const installDate = getInstallDate();
+        const { access_token, environment, installDate } = getActivationSettingsOrFail()
 
         const device_hash = installDate != ''
             ? generateDeviceHash(new Date(installDate))

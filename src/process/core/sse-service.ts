@@ -8,6 +8,7 @@ import { SSEHandler } from "./sse-handler";
 import "../sse-services"
 import logger from "./logger";
 import { AuthenticateService } from "./authenticate.service";
+import { isInstallActivated } from "./helpers/get-activation-settings.helper";
 
 interface SSEToken {
     token: UUID;
@@ -40,7 +41,7 @@ class SSEConnection {
     handleError(event: MessageEvent) {
         logger.error(`[${this.connectionId}] SSE Error`, event);
 
-        if(!SSEService.isConnected()) {
+        if (!SSEService.isConnected()) {
 
             this.destroy();
         }
@@ -73,6 +74,12 @@ export class SSEService {
     private static connectionErrors = 0;
 
     public static async initiate() {
+
+        if (!isInstallActivated()) {
+
+            return;
+        }
+
         await this.connect();
         setInterval(() => this.sendStatusToRenderer(), 1000);
         this.connectionHealthCheck();
@@ -140,7 +147,7 @@ export class SSEService {
 
         setInterval(() => {
 
-            if(!this.sseConnection) {
+            if (!this.sseConnection) {
 
                 return;
             }
@@ -156,7 +163,7 @@ export class SSEService {
 
     public static isConnected() {
 
-        if(!this.sseConnection) {
+        if (!this.sseConnection) {
 
             return false;
         }
