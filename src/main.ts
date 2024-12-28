@@ -4,10 +4,10 @@ import { app, BrowserWindow, Menu, Tray } from 'electron';
 import path from 'path';
 import { loadControllers } from './process/modules/controllers';
 import { APP_NAME } from '../configs/consts';
-import { AuthenticateService } from './process/core/authenticate.service';
 import { getAutoStartup } from './process/core/store';
 import { isDevelopment } from './shared/helpers/is-development.helper';
 import logger from './process/core/logger';
+import { SSEService } from './process/core/sse-service';
 
 logger.info('Version', process.env.npm_package_version);
 
@@ -60,7 +60,7 @@ if (!gotTheLock) {
     
         loadControllers();
     
-        await AuthenticateService.initiate();
+        await SSEService.initiate();
     });
 }
 

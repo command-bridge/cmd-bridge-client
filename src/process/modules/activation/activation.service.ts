@@ -2,8 +2,8 @@ import { APIClientService } from "../../core/api-client.service";
 import { IPCHandlerResponse } from "../../core/ipc-handler-response";
 import { getAccessToken, setAccessToken, setEnvironment, setInstallDate } from "../../core/store";
 import { DeviceActivateDto } from "./device-activate.dto";
-import { AuthenticateService } from "../../core/authenticate.service";
 import { generateDeviceHash } from "../../core/helpers/generate-device-hash.helper";
+import { SSEService } from "../../core/sse-service";
 
 export class ActivationService {
 
@@ -21,7 +21,7 @@ export class ActivationService {
         setEnvironment(result.data.environment);
         setInstallDate(installDate);
 
-        await AuthenticateService.initiate();
+        await SSEService.initiate();
 
         return IPCHandlerResponse.Success({ access_token: result.data.integration_token });
     }

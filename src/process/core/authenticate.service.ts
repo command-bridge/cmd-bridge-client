@@ -1,10 +1,11 @@
 import { machineIdSync } from "node-machine-id";
 import { APIClientService } from "./api-client.service";
 import { getAllSettings, getInstallDate } from "./store";
-import { SSEService } from "./sse-service";
 import { generateDeviceHash } from "./helpers/generate-device-hash.helper";
+import logger from "./logger";
+import { isTokenExpired } from "./helpers/is-token-expired.helper";
 
-type DeviceLoginDto = { 
+type DeviceLoginDto = {
     token: string;
 }
 
@@ -12,30 +13,69 @@ export class AuthenticateService {
 
     static sessionToken: string;
 
-    static async initiate() {
+    static async refreshToken() {
+
+        const currentToken = APIClientService.getToken();
+
+        if (currentToken && currentToken.length > 0) {
+
+            if (!isTokenExpired(this.sessionToken)) {
+                return;
+            }
+
+            logger.info('Token expired. Going refresh');
+        }
 
         const { access_token, environment } = getAllSettings()
 
-        if(!access_token && access_token === '') {
+        if (!access_token && access_token === '') {
 
             return;
         }
 
         const installDate = getInstallDate();
 
-        const device_hash = installDate != '' 
-            ? generateDeviceHash(new Date(installDate)) 
+        const device_hash = installDate != ''
+            ? generateDeviceHash(new Date(installDate))
             : machineIdSync(true) //retro compatibility with older versions than 0.0.8 where there was no install date;
 
-        const result = await APIClientService.post<DeviceLoginDto>('device/login', {
-            integration_token: access_token,
-            environment: environment,
-            device_hash,
-        });
+        const sessionToken = await this.tokenRequestWithRetry(device_hash, access_token, environment);
+        APIClientService.setToken(sessionToken);
+    }
 
-        this.sessionToken = result.data.token;
+    static async tokenRequestWithRetry(device_hash: string, access_token?: string, environment?: string) {
 
-        APIClientService.setToken(this.sessionToken);
-        SSEService.initiate();
+        let token: string | undefined = undefined;
+        let retries = 0;
+        const initialRetryMs = 15000;
+        const eachRetryIncreaseMs = 5000;
+        const maxRetryIntervalMs = 60000 * 5;
+
+        while (!token) {
+
+            try {
+                const result = await APIClientService.post<DeviceLoginDto>('device/login', {
+                    integration_token: access_token,
+                    environment: environment,
+                    device_hash,
+                });
+
+                retries = 0;
+
+                token = result.data.token
+            } catch (error) {
+
+                const retryDelay = Math.min(initialRetryMs + (eachRetryIncreaseMs * retries), maxRetryIntervalMs);
+
+                logger.error(error)
+                logger.warn(`Failed to request token at #${retries}... Trying again in ${Math.floor(retryDelay / 1000)}s.`);
+
+                retries++;
+
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
+            }
+        }
+
+        return token;
     }
 }

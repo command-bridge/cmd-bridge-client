@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { BrowserWindow } from "electron";
 import { APIClientService } from "./api-client.service";
 import { randomUUID, UUID } from "crypto";
 import { getBackendAPIAddress } from "./store";
@@ -7,6 +7,7 @@ import { AxiosError } from "axios";
 import { SSEHandler } from "./sse-handler";
 import "../sse-services"
 import logger from "./logger";
+import { AuthenticateService } from "./authenticate.service";
 
 interface SSEToken {
     token: UUID;
@@ -93,6 +94,7 @@ export class SSEService {
 
         try {
 
+            await AuthenticateService.refreshToken();
             await this.client.post<SSEToken>("/device-events", {
                 version: process.env.npm_package_version,
             });
