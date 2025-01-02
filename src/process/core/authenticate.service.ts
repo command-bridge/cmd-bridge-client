@@ -12,15 +12,13 @@ type DeviceLoginDto = {
 
 export class AuthenticateService {
 
-    static sessionToken: string;
-
     static async refreshToken() {
 
         const currentToken = APIClientService.getToken();
 
         if (currentToken && currentToken.length > 0) {
 
-            if (!isTokenExpired(this.sessionToken)) {
+            if (!isTokenExpired(currentToken)) {
                 return;
             }
 
