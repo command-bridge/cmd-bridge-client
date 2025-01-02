@@ -76,10 +76,11 @@ export class SSEPackagesService {
     @SSEAction('package')
     public static async packageAction(payload: IPackageCallMethodPayload) {
 
-        const respose = await PackagesManagerService.runPackageMethod(payload);
+        PackagesManagerService.runPackageMethod(payload).then(async (respose) => {
 
-        logger.info('packageAction response:', respose)
+            logger.info('packageAction response:', respose)
 
-        await APIClientService.post('device-events/response', respose);
+            await APIClientService.post('device-events/response', respose);
+        });
     }
 }
