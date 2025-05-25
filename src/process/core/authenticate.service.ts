@@ -27,8 +27,8 @@ export class AuthenticateService {
 
         const { access_token, environment, installDate } = getActivationSettingsOrFail()
 
-        const device_hash = installDate != ''
-            ? generateDeviceHash(new Date(installDate))
+        const device_hash = installDate && installDate != ''
+            ? generateDeviceHash(new Date(installDate as string))
             : machineIdSync(true) //retro compatibility with older versions than 0.0.8 where there was no install date;
 
         const sessionToken = await this.tokenRequestWithRetry(device_hash, access_token, environment);

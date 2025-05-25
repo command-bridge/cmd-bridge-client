@@ -23,6 +23,7 @@
     "@electron/asar": "^3.2.17",
     "@mdi/font": "^7.4.47",
     "axios": "^1.7.7",
+    "better-sqlite3": "^11.10.0",
     "dayjs": "^1.11.13",
     "electron-store": "^8.2.0",
     "electron-updater": "^6.3.9",
@@ -39,6 +40,7 @@
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/eventsource": "^1.1.15",
     "@types/node": "^22.8.7",
     "@types/semver": "^7.5.8",

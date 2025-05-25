@@ -1,12 +1,16 @@
-import Store from 'electron-store';
-import { STORE_DEFAULTS } from '../../types/defaults';
-import { machineIdSync } from 'node-machine-id';
 import { existsSync, unlinkSync } from 'fs';
 import path from 'path';
 import { app } from 'electron';
 import logger from './logger';
+import Store from 'electron-store';
+import { machineIdSync } from 'node-machine-id';
+import { STORE_DEFAULTS } from '../../types/defaults';
+import { getValue, setValue } from './store-sqlite';
+import { getAllSettings as sqliteGetAllSettings,
+    resetSettings as sqliteResetSettings,
+    updateSettings as sqliteUpdateSettings,
+ } from './store-sqlite';
 
-// Configurando o electron-store com criptografia
 export type CommandBridgeClientStore = {
     access_token?: string,
     environment?: string,
@@ -15,9 +19,13 @@ export type CommandBridgeClientStore = {
     install_date: string;
 }
 
-const store = loadOrCreateNewStoreIfFail();
-
-function loadOrCreateNewStoreIfFail() {
+/**
+ * This is a deprecated function that initializes the store.
+ * It is kept for backward compatibility but should not be used in new code.
+ * For new code, we using the SQLite-based store system.
+ * @deprecated 
+ */
+export function loadOrCreateNewStoreIfFail() {
 
     try {
         return new Store<CommandBridgeClientStore>({
@@ -47,48 +55,27 @@ function loadOrCreateNewStoreIfFail() {
     }
 }
 
-export function setAccessToken(token: string) {
-    store.set('access_token', token);
-}
+// Public API (same as before)
+export function setAccessToken(token: string) { setValue('access_token', token); }
+export function setEnvironment(env: string) { setValue('environment', env); }
+export function setInstallDate(date: Date) { setValue('install_date', date.toISOString()); }
 
-export function setEnvironment(environment: string) {
-    store.set('environment', environment);
-}
-
-export function setInstallDate(date: Date) {
-    store.set('install_date', date.toISOString());
-}
-
-export function getAccessToken() {
-    return store.get('access_token');
-}
-
-export function getEnvironment() {
-    return store.get('environment');
-}
-
-export function getAutoStartup() {
-    return store.get('auto_startup');
-}
-
-export function getBackendAPIAddress() {
-    return store.get('backend_api_address');
-}
-
-export function getInstallDate() {
-    return store.get('install_date');
-}
+export function getAccessToken() { return getValue<string>('access_token'); }
+export function getEnvironment() { return getValue<string>('environment'); }
+export function getAutoStartup() { return getValue<boolean>('auto_startup'); }
+export function getBackendAPIAddress() { return getValue<string>('backend_api_address'); }
+export function getInstallDate() { return getValue<string>('install_date'); }
 
 export function getAllSettings() {
-    return store.store;
+    return sqliteGetAllSettings();
 }
 
 export function resetSettings() {
-    store.clear();
+    sqliteResetSettings();
 }
 
 export function updateSettings(newSettings: CommandBridgeClientStore) {
-    store.set(newSettings);
+    sqliteUpdateSettings(newSettings);
 }
 
-logger.info('Loaded store', store.store);
+logger.info('Configuration system initialized');
