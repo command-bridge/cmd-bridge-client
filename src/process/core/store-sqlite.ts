@@ -1,14 +1,21 @@
-import Database from "better-sqlite3";
 import { app } from "electron";
 import { existsSync, renameSync, unlinkSync } from "fs";
 import path from "path";
 import logger from './logger';
 import { STORE_DEFAULTS } from "../../types/defaults";
 import { CommandBridgeClientStore, loadOrCreateNewStoreIfFail } from "./store";
+const Database = require('better-sqlite3');
 
 const DB_NAME = 'config.db';
 const dbPath = path.join(app.getPath('userData'), DB_NAME);
-let db: Database.Database;
+let db: any;
+
+function getDb() {
+    if (!db) {
+        initialize();
+    }
+    return db;
+}
 
 interface ConfigRow {
     key: string;
@@ -17,6 +24,8 @@ interface ConfigRow {
 
 function initializeSQLite() {
     try {
+        logger.info('Initializing SQLite database at:', dbPath);
+
         db = new Database(dbPath);
         db.pragma('journal_mode = DELETE');
         db.pragma('synchronous = FULL');
@@ -31,6 +40,7 @@ function initializeSQLite() {
         `);
     } catch (error) {
         logger.error('Failed to initialize SQLite database:', error);
+
         if (existsSync(dbPath)) {
             unlinkSync(dbPath);
             initializeSQLite(); // Retry
@@ -44,12 +54,12 @@ function migrateToSQLite() {
     const allSettings = electronStore.store;
 
     try {
-        const stmt = db.prepare(`
+        const stmt = getDb().prepare(`
             INSERT OR REPLACE INTO config (key, value) 
             VALUES (@key, @value)
         `);
         
-        const transaction = db.transaction(() => {
+        const transaction = getDb().transaction(() => {
             for (const [key, value] of Object.entries(allSettings)) {
                 stmt.run({ key, value: JSON.stringify(value) });
             }
@@ -67,7 +77,7 @@ function migrateToSQLite() {
     }
 }
 
-function initialize() {
+export function initialize() {
     initializeSQLite();
     
     // Check if we need to migrate
@@ -76,12 +86,12 @@ function initialize() {
         migrateToSQLite();
     } else {
         // Insert defaults if no migration needed
-        const insertDefault = db.prepare(`
+        const insertDefault = getDb().prepare(`
             INSERT OR IGNORE INTO config (key, value)
             VALUES (?, ?)
         `);
         
-        db.transaction(() => {
+        getDb().transaction(() => {
             for (const [key, value] of Object.entries(STORE_DEFAULTS)) {
                 insertDefault.run(key, JSON.stringify(value));
             }
@@ -91,7 +101,7 @@ function initialize() {
 
 // Helper functions
 export function getValue<T>(key: string): T | undefined {
-    const row = db.prepare('SELECT value FROM config WHERE key = ?').get(key) as ConfigRow | undefined;
+    const row = getDb().prepare('SELECT value FROM config WHERE key = ?').get(key) as ConfigRow | undefined;
     
     if (!row) return undefined;
     
@@ -104,12 +114,12 @@ export function getValue<T>(key: string): T | undefined {
 }
 
 export function setValue(key: string, value: any): void {
-    db.prepare('INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)')
+    getDb().prepare('INSERT OR REPLACE INTO config (key, value) VALUES (?, ?)')
       .run(key, JSON.stringify(value));
 }
 
 export function getAllSettings(): CommandBridgeClientStore {
-    const rows = db.prepare('SELECT key, value FROM config').all() as ConfigRow[];
+    const rows = getDb().prepare('SELECT key, value FROM config').all() as ConfigRow[];
     const result: any = {};
     for (const row of rows) {
         result[row.key] = JSON.parse(row.value);
@@ -118,26 +128,24 @@ export function getAllSettings(): CommandBridgeClientStore {
 }
 
 export function resetSettings() {
-    db.exec('DELETE FROM config');
-    db.transaction(() => {
+    getDb().exec('DELETE FROM config');
+    getDb().transaction(() => {
         for (const [key, value] of Object.entries(STORE_DEFAULTS)) {
-            db.prepare('INSERT INTO config (key, value) VALUES (?, ?)')
+            getDb().prepare('INSERT INTO config (key, value) VALUES (?, ?)')
               .run(key, JSON.stringify(value));
         }
     })();
 }
 
 export function updateSettings(newSettings: CommandBridgeClientStore) {
-    const stmt = db.prepare(`
+    const stmt = getDb().prepare(`
         INSERT OR REPLACE INTO config (key, value) 
         VALUES (@key, @value)
     `);
     
-    db.transaction(() => {
+    getDb().transaction(() => {
         for (const [key, value] of Object.entries(newSettings)) {
             stmt.run({ key, value: JSON.stringify(value) });
         }
     })();
 }
-
-initialize();

@@ -1,3 +1,13 @@
+import logger from './process/core/logger';
+
+process.on('uncaughtException', (error) => {
+    logger.error('[UNCAUGHT EXCEPTION]', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    logger.error('[UNHANDLED REJECTION]', reason);
+});
+
 import 'reflect-metadata';
 import './process/core/logger-renderer';
 import { app, BrowserWindow, Menu, Tray } from 'electron';
@@ -6,10 +16,11 @@ import { loadControllers } from './process/modules/controllers';
 import { APP_NAME } from '../configs/consts';
 import { getAutoStartup } from './process/core/store';
 import { isDevelopment } from './shared/helpers/is-development.helper';
-import logger from './process/core/logger';
 import { SSEService } from './process/core/sse-service';
 
 logger.info('Version', process.env.npm_package_version);
+logger.info('Node ABI version:', process.versions.modules);
+logger.info('Electron version:', process.versions.electron);
 
 if (isDevelopment()) {
     // supports hot-reload for electron when using ts-node
@@ -58,6 +69,8 @@ if (!gotTheLock) {
     
     app.whenReady().then(async () => {
     
+        logger.info('Initiating application...');
+
         loadControllers();
     
         await SSEService.initiate();

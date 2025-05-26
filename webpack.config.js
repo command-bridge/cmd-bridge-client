@@ -7,6 +7,9 @@ module.exports = {
   entry: './src/main.ts', // Entry for the main process
   mode: 'production',
   target: 'electron-main',
+  externals: {
+    'better-sqlite3': 'commonjs better-sqlite3'
+  },  
   resolve: {
     extensions: ['.ts', '.js'],
     alias: {

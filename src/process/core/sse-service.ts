@@ -3,7 +3,7 @@ import { APIClientService } from "./api-client.service";
 import { randomUUID, UUID } from "crypto";
 import { getBackendAPIAddress } from "./store";
 import { EventSource } from "eventsource";
-import { AxiosError } from "axios";
+import { AxiosError, AxiosInstance } from "axios";
 import { SSEHandler } from "./sse-handler";
 import "../sse-services"
 import logger from "./logger";
@@ -66,7 +66,7 @@ class SSEConnection {
 };
 
 export class SSEService {
-    private static client = APIClientService.getClient();
+    private static client: AxiosInstance;
     private static sseConnection: SSEConnection | null = null;
     private static sessionStartTime: Date | null = null;
     private static lastHeartbeat: number = 0;
@@ -80,6 +80,7 @@ export class SSEService {
             return;
         }
 
+        this.client = APIClientService.getClient();
         await this.connect();
         setInterval(() => this.sendStatusToRenderer(), 1000);
         this.connectionHealthCheck();

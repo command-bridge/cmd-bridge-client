@@ -77,5 +77,3 @@ export function resetSettings() {
 export function updateSettings(newSettings: CommandBridgeClientStore) {
     sqliteUpdateSettings(newSettings);
 }
-
-logger.info('Configuration system initialized');
