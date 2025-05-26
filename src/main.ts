@@ -74,7 +74,7 @@ if (!gotTheLock) {
         loadControllers();
     
         await SSEService.initiate();
-    });
+    }); 
 }
 
 function createWindow() {
@@ -89,7 +89,7 @@ function createWindow() {
             contextIsolation: false
         },
         autoHideMenuBar: isDevelopment() ? false : true,
-        frame: isDevelopment() ? true : false,
+        frame: true,
         resizable: isDevelopment(),
         fullscreenable: isDevelopment(),
     });
