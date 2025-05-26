@@ -1,6 +1,6 @@
 {
   "name": "command-bridge-client",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "main": "dist/main.js",
   "scripts": {
     "tsc:build": "tsc",
@@ -14,7 +14,7 @@
     "build:webpack": "webpack --config webpack.config.js",
     "build": "npm run vue:build && npm run electron:build && electron-builder --publish=never",
     "publish": "electron-builder --publish=always",
-    "postinstall": "electron-builder install-app-deps" 
+    "postinstall": "electron-builder install-app-deps"
   },
   "keywords": [],
   "author": "",
@@ -102,6 +102,6 @@
     ],
     "asarUnpack": [
       "node_modules/better-sqlite3/**/*"
-    ]   
+    ]
   }
 }
